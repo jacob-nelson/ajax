@@ -23,15 +23,56 @@ var ajax = (function () {
            }
         }
     }
+
+	serialize = function(obj) {
+	  var str = [];
+	  for(var p in obj)
+		if (obj.hasOwnProperty(p)) {
+		  str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+		}
+	  return str.join("&");
+	}
 	
-	var get = function(path, callback){
+	var get = function(options, callback){
+		options.method = "GET";
+		request(options, callback)
+	}
+
+	var post = function(options, callback){
+		options.method = "POST";
+		request(options, callback);
+	}
+	
+	var request = function(options, callback){
 		cb = callback;
-		xmlhttp.open("GET", path, true);
-		xmlhttp.send();
+		path = options.path;
+		method = options.method;
+		if(options.data)
+			data = serialize(options.data);
+		if(method == "GET"){
+			xmlhttp.open(method, path+"?"+data, true);
+			data = null;
+		}
+		else
+			xmlhttp.open(method, path, true);
+		
+		if(method == "POST")
+			xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+		if(options.requestHeaders){
+			requestHeaders = options.requestHeaders;
+			for (var key in requestHeaders) {
+			  if (requestHeaders.hasOwnProperty(key)) {
+				xmlhttp.setRequestHeader(key, requestHeaders[key]);
+			  }
+			}	
+		}
+		xmlhttp.send(data); // if data, send(data)		
 	}
 	
   return {
-    get
+    get,
+	post
   }	
 	
 })();

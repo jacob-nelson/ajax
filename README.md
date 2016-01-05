@@ -64,7 +64,7 @@ var options = {
 	}
 }
 
-  ajax.get(options, function(data){
+  ajax.request(options, function(data){
 	console.log(JSON.parse(data));
   });
 ```
@@ -86,7 +86,7 @@ var options = {
 	}
 }
 
-  ajax.post(options, function(data){
+  ajax.request(options, function(data){
 	console.log(JSON.parse(data));
   });
 ```

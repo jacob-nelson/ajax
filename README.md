@@ -6,8 +6,24 @@ In future, I will be adding support to other methods as well.
 #### How to call?
 
 ```js
-document.addEventListener("DOMContentLoaded", function(event) { 
-  ajax.get(path, function(data){
+
+var options = {
+	path: "ajax.php",
+	data: {
+		name: "Jacob Nelson",
+		place: "Trivandrum"
+	},
+	requestHeaders: {
+		'X-Test-Header': 'test-value',
+		'Access-Control-Allow-Origin': '*',
+		'Access-Control-Allow-Methods': '*'
+	}
+}
+
+  ajax.get(options, function(data){
 	console.log(JSON.parse(data));
   });
-});
+
+  ajax.post(options, function(data){
+	console.log(JSON.parse(data));
+  });

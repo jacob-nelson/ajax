@@ -1,28 +1,4 @@
 var ajax = (function () {
-    var xmlhttp;
-	var cb;
-
-    if (window.XMLHttpRequest) {
-        // code for IE7+, Firefox, Chrome, Opera, Safari
-        xmlhttp = new XMLHttpRequest();
-    } else {
-        // code for IE6, IE5
-        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-
-    xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
-           if(xmlhttp.status == 200){
- 			   cb(xmlhttp.responseText);
-           }
-           else if(xmlhttp.status == 400) {
-              cb('There was an error 400');
-           }
-           else {
-               cb('something else other than 200 was returned');
-           }
-        }
-    }
 
 	serialize = function(obj) {
 	  var str = [];
@@ -44,11 +20,33 @@ var ajax = (function () {
 	}
 	
 	var request = function(options, callback){
-		cb = callback;
 		path = options.path;
 		method = options.method;
 		if(options.data)
 			data = serialize(options.data);
+		
+		if (window.XMLHttpRequest) {
+			// code for IE7+, Firefox, Chrome, Opera, Safari
+			var xmlhttp = new XMLHttpRequest();
+		} else {
+			// code for IE6, IE5
+			var xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}		
+
+		xmlhttp.onreadystatechange = function() {
+			if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
+			   if(xmlhttp.status == 200){
+				   callback(xmlhttp.responseText);
+			   }
+			   else if(xmlhttp.status == 400) {
+				  callback('There was an error 400');
+			   }
+			   else {
+				   callback('something else other than 200 was returned');
+			   }
+			}
+		}
+	
 		if(method == "GET"){
 			xmlhttp.open(method, path+"?"+data, true);
 			data = null;
@@ -56,8 +54,9 @@ var ajax = (function () {
 		else
 			xmlhttp.open(method, path, true);
 		
-		if(method == "POST")
-			xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xmlhttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+		xmlhttp.setRequestHeader("Accept", "*");	
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
 		if(options.requestHeaders){
 			requestHeaders = options.requestHeaders;
@@ -67,12 +66,13 @@ var ajax = (function () {
 			  }
 			}	
 		}
-		xmlhttp.send(data); // if data, send(data)		
+		xmlhttp.send(data); // if data, send(data)
 	}
 	
   return {
     get,
-	post
+    post,
+    request
   }	
 	
 })();
